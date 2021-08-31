@@ -1,0 +1,63 @@
+/**********************************************************************************
+* Copyright (c)  2008-2015  Guangdong OPPO Mobile Comm Corp., Ltd
+* VENDOR_EDIT
+* Description: Battery Profile for msm8940
+* Version   : 1.0
+* Date      : 2016-09-02
+* Author    : wenbin.liu@BSP.CHG.Basic		   	
+***********************************************************************************/
+
+qcom,oppo_batt_nonstd_2820mah {
+	/* #2556483_OPPO_BLP619_2820mAh_averaged_MasterSlave_Sept1st2016*/
+	qcom,max-voltage-uv = <4370000>;
+	qcom,nom-batt-capacity-mah = <2820>;
+//	qcom,chg-term-ua = <100000>;
+	qcom,batt-id-kohm = <200>;
+	qcom,battery-beta = <3380>;	
+	qcom,battery-type = "oppo_batt_nonstd_2820mah";
+	qcom,chg-rslow-comp-c1 = <2206944>;
+	qcom,chg-rslow-comp-c2 = <2512311>;
+
+	
+	qcom,chg-rs-to-rslow = <961286>;
+	qcom,chg-rslow-comp-thr = <0x99>;
+//	qcom,fastchg-current-ma = <2000>;
+//	qcom,fg-cc-cv-threshold-mv = <4340>;
+	qcom,checksum = <0xDDFE>;
+	qcom,gui-version = "PMI8950GUI - 2.0.0.16";
+	qcom,fg-profile-data = [
+		 F7 83 91 7D 
+		 85 81 06 7C 
+		 62 83 B9 6E 
+		 5A 88 B0 8E 
+		 5D 82 12 98 
+		 83 B5 03 C1 
+		 58 17 05 88 
+		 D3 7D AE 81 
+		 2A 7C 61 83 
+		 30 5E D0 82 
+		 21 8E 42 82 
+		 14 9A 82 BD 
+		 CD CA 5A 0E 
+		 F8 0A EC 5A 
+		 50 6F D9 FD 
+		 07 37 1C 3F 
+		 CF 30 00 00 
+		 61 47 DF 22 
+		 FE 3A 00 00 
+		 00 00 00 00 
+		 00 00 00 00 
+		 9A 70 18 70 
+		 12 70 EA 83 
+		 8A 74 55 61 
+		 1E 62 40 81 
+		 4A 74 7B 60 
+		 F7 75 FD 99 
+		 17 EF 61 EF 
+		 5E A0 71 0C 
+		 28 00 FF 36 
+		 F0 11 30 03 
+		 00 00 00 0C 
+	];
+
+};

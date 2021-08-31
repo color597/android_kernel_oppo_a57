@@ -1,0 +1,3 @@
+
+source "drivers/input/touchscreen/oppo_touchscreen/Synaptics/S3508/Kconfig"
+source "drivers/input/touchscreen/oppo_touchscreen/Synaptics/S1302_virtal_key/Kconfig"

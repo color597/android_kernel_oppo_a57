@@ -1,0 +1,471 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8937-pinctrl.dtsi"
+#include "msm8937-camera-sensor-mtp.dtsi"
+
+&flash_led {
+	compatible = "qcom,qpnp-flash-led";
+	reg = <0xd300 0x100>;
+	pinctrl-names = "flash_led_enable","flash_led_disable";
+	pinctrl-0 = <&rear_flash_led_enable>;
+	pinctrl-1 = <&rear_flash_led_disable>;
+	qcom,follow-otst2-rb-disabled;
+};
+
+&wled {
+	qcom,cons-sync-write-delay-us = <1000>;
+};
+
+&soc {
+/*#ifdef VENDOR_EDIT ziqing.guo@phone.bsp 2016-07-23 add for fingerprint compatibility */
+    oppo_fp_common { //Slave driver and CS ID
+        compatible = "oppo,fp_common"; //Manufacture, and Model
+        oppo,fp-id0 = <&tlmm 7 0x00>;
+        oppo,fp-id1 = <&tlmm 33 0x00>;
+        oppo,fp-id2 = <&tlmm 13 0x00>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&gpio_id0_default &gpio_id1_default &gpio_id2_default>;
+    };
+/*#endif VENDOR_EDIT */
+
+/*#ifdef VENDOR_EDIT Haitao.zhou@phone.bsp 2016-08-16 add for fpc TEE */
+    fpc_fpc1020 { //Slave driver and CS ID
+        compatible = "fpc,fpc1020"; //Manufacture, and Model
+        fpc,irq-gpio    = <&tlmm 38 0x00>;
+        vdd_io-supply = <&pm8937_l6>;  // 1.8V
+    };
+/*#endif VENDOR_EDIT */
+
+
+//#ifdef VENDOR_EDIT
+//Ping.Liu@BSP.Fingerprint.Basic, 2017/01/01, 
+//add for goodixfp.
+	goodix_fp { 	
+		compatible = "goodix,goodix_fp";
+		interrupt-parent = <&tlmm>;
+		interrupts = <38 0>;
+		spi-max-frequency = <1920000>;
+		//goodix,fp-id1 = <&tlmm 20 0x00>;
+		//goodix,fp-id2 = <&tlmm 21 0x00>;
+		goodix,gpio_irq = <&tlmm 38 0x1>;
+		goodix,gpio_reset = <&tlmm 16 0x0>;
+		//goodix,gpio_pwr = <&tlmm 82 0x1>;
+	};
+//#endif /*VENDOR_EDIT*/
+
+
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		pinctrl-names = "tlmm_gpio_key_active","tlmm_gpio_key_suspend";
+		pinctrl-0 = <&gpio_key_active>;
+		pinctrl-1 = <&gpio_key_suspend>;
+
+
+//#ifdef VENDOR_EDIT
+//Fanhong.Kong@ProDrv.CHG,modified 2016.06.03 for vol
+/*
+		camera_focus {
+			label = "camera_focus";
+			gpios = <&tlmm 128 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x210>;
+			debounce-interval = <15>;
+		};
+
+		camera_snapshot {
+			label = "camera_snapshot";
+			gpios = <&tlmm 127 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x2fe>;
+			debounce-interval = <15>;
+		};
+*/
+		vol_up {
+			label = "volume_up";
+			gpios = <&tlmm 127 0x1>;
+			linux,input-type = <1>;
+			linux,code = <115>;
+			debounce-interval = <15>;
+		};
+
+		vol_down {
+            label = "volume_down";
+            gpios = <&tlmm 128 0x1>;
+            linux,input-type = <1>;
+            linux,code = <114>;
+            gpio-key,wakeup;
+            debounce-interval = <15>;
+        };
+/*
+		home_key {
+		   label = "home_key";
+		   gpios = <&tlmm 13 0x1>;
+		   linux,input-type = <1>;
+		   linux,code = <102>;
+		   gpio-key,wakeup;
+		   debounce-interval = <15>;
+        };
+*/
+//#endif /* VENDOR_EDIT */
+	};
+	
+	//#ifdef VENDOR_EDIT
+	//Wanghao@phone.bsp.tp,del 2017/01/04 for close hbtp
+	/*hbtp {
+		compatible = "qcom,hbtp-input";
+		vcc_dig-supply = <&pm8937_l5>;
+		qcom,dig-load = <15000>;
+		qcom,dig-vtg-min = <1800000>;
+		qcom,dig-vtg-max = <1800000>;
+	};*/
+	//#endif /*VENDOR_EDIT*/
+//#ifdef VENDOR_EDIT//Fanhong.Kong@ProDrv.CHG,add 2016/6/11 for boot mode
+	devinfo {
+		compatible = "oppo-devinfo";
+    	Hw,operator-gpio1 = <&tlmm 20 0x00>;
+		Hw,operator-gpio2 = <&tlmm 21 0x00>;
+		Hw,operator-gpio3 = <&tlmm 22 0x00>;
+//		Hw,operator-gpio4 = <&tlmm 23 0x00>;
+
+		Hw,sub_hwid_1 = <&tlmm 19 0x00>;
+//		Hw,sub_hwid_2= <&tlmm 101 0x00>;
+//		Hw,ant_select-gpio= <&tlmm 84 0x00>;
+		Hw,audio_hwid_1 = <&tlmm 90 0x00>;
+		pinctrl-names = "default";
+//		pinctrl-0 = <&hw_operator_gpio1_active &hw_operator_gpio2_active &hw_operator_gpio3_active &hw_sub_gpio1_active &hw_sub_gpio2_active>;
+		pinctrl-0 = <&hw_operator_gpio1_active &hw_operator_gpio2_active &hw_operator_gpio3_active &hw_sub_gpio1_active &hw_audio_gpio1_active>;
+
+	};
+//#endif /*VENDOR_EDIT*/
+};
+
+&blsp1_uart2 {
+	status = "ok";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart_console_active>;
+};
+
+
+//#ifdef VENDOR_EDIT
+//Fanhong.Kong@ProDrv.CHG,modified 2016.06.03 for vol
+/*
+&pmi_haptic{
+	qcom,wave-play-rate-us = <4165>;
+	qcom,actuator-type = "lra";
+};
+*/
+//#endif /* VENDOR_EDIT *"/
+
+
+&spi_3 { /* BLSP1 QUP3 */
+	maxim_sti@0 {
+		status = "disabled";
+		compatible = "maxim,maxim_sti";
+		reg = <0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0>;
+		spi-max-frequency = <16000000>;
+		avdd-supply = <&pm8937_l10>;
+		dvdd-supply = <&pm8937_l5>;
+		maxim_sti,irq-gpio = <&tlmm 65 0x00>;
+		maxim_sti,reset-gpio = <&tlmm 64 0x00>;
+		maxim_sti,touch_fusion = "/vendor/bin/touch_fusion";
+		maxim_sti,config_file = "/etc/firmware/qtc800s.cfg";
+		maxim_sti,fw_name = "qtc800s.bin";
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend",
+			"pmx_ts_release";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		pinctrl-2 = <&ts_release>;
+	};
+};
+
+//#ifdef VENDOR_EDIT
+&i2c_3 { /* BLSP1 QUP3 */
+	/*Tong.han@BSP.group.BL 2014-11-06 add to config breath-led*/
+	ktd2026@30 {
+		status = "okay";
+		compatible = "ktd,ktd2026";
+		reg = <0x30>;
+		ktd2026,max_brightness = <0x18>;  //current:  0x00:0.125ma 0x07 1ma  0x29:5.25ma  0x4f:10ma  0xbf-0xff:24ma
+		//ktd2026,max_brightness = <0x4F>;  //current:  0x00:0.125ma   0x4f:10ma  0xbf-0xff:24ma
+	};
+
+
+        //liping-m@SWDP.MultiMedia, 2016/08/12  Add for 16061 Lcd backlight i2c
+        ti_lm3697_bl@36 {
+                compatible = "lm3697";
+                reg = <0x36>;
+                ti,bl-enable-gpio = <&tlmm 68 0x00>;
+        };
+
+	//#ifdef VENDOR_EDIT
+	//Tong.han@Bsp.Group.Tp,2016-9-03,Add Dts for GT5688
+	goodix_ts@5d {
+		compatible = "goodix,gt1x";
+		reg = <0x5d>;
+			
+		/* Interrupt && Irq-gpio */	
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0x2001>;    
+
+		/* Power Config */
+		vdd_2v8-supply = <&touchpanel_vdd>; 
+		vcc_1v8-supply = <&pm8937_l6>;   
+
+		/* Other HW Resource */
+		irq-gpio = <&tlmm 65 0x2001>;
+		reset-gpio = <&tlmm 64 0x1>;
+		id1-gpio = <&tlmm 61 0x1>;
+		id2-gpio = <&tlmm 99 0x1>;
+		id3-gpio = <&tlmm 59 0x1>;
+		pinctrl-names = "default","pin_set_high","pin_set_low","pin_set_nopull";
+		pinctrl-0 = <&ts_int_active &ts_reset_active &ts_id1_active &ts_id2_active &ts_id3_active>;
+		pinctrl-1 = <&pin_set_high>;
+		pinctrl-2 = <&pin_set_low>;
+		pinctrl-3 = <&pin_set_nopull>;
+        
+		/* Configuration Setting */			
+		touchpanel,max-num-support = <10>;
+		touchpanel,tx-rx-num = <13 24>;
+		touchpanel,panel-coords = <720 1280>; //max_x,max_y of display area--Not include virtual keys!
+		touchpanel,display-coords = <720 1280>;
+			
+		/* SW Support Feature Control */
+		register-is-16bit;
+		black_gesture_support;
+		//glove_mode_support;
+		//charger_pump_support;
+		edge_limit_support;
+		esd_handle_support;
+		spurious_fingerprint_support;
+			
+		/*
+		 *Virtual Key Config:
+		 *1:touchpanel,button-type: <virtualkey_type  supportted_button-map>
+		 *virtualkey_type:
+		 *Type 1: using board_properties
+		 *Type 2: using same IC (button zone&& touch zone are seprate)
+		 *Type 3: using diffrent IC (button zone&& touch zone are seprate)
+		 *Type 4: No need of virtual key process
+		 *supportted_button-map:select|menu|home|back
+		 * 
+		 *2:touchpanel,button-map
+		 *type (X1,Y1)(X2,Y2)(X3,Y3)(Width_X,Hight_Y)--Only when button-type is 0
+		 */
+		touchpanel,button-type = <2 0x05>;		
+		//touchpanel,button-map = <118 1370 360 1370 600 1370 120 90>;					   
+	};
+	//#endif /*VENDOR_EDIT*/
+};
+//#endif
+&i2c_5 { /* BLSP2 QUP1 */
+	nq@28 {
+		compatible = "qcom,nq-nci";
+		reg = <0x28>;
+		qcom,nq-irq = <&tlmm 17 0x00>;
+		qcom,nq-ven = <&tlmm 16 0x00>;
+		qcom,nq-firm = <&tlmm 130 0x00>;
+		qcom,nq-clkreq = <&pm8937_gpios 5 0x00>;
+		interrupt-parent = <&tlmm>;
+		qcom,clk-src = "BBCLK2";
+		interrupts = <17 0>;
+		interrupt-names = "nfc_irq";
+		pinctrl-names = "nfc_active", "nfc_suspend";
+		pinctrl-0 = <&nfc_int_active &nfc_disable_active>;
+		pinctrl-1 = <&nfc_int_suspend &nfc_disable_suspend>;
+		clocks = <&clock_gcc clk_bb_clk2_pin>;
+		clock-names = "ref_clk";
+	};
+};
+
+&sdhc_1 {
+	/* device core power supply */
+	vdd-supply = <&pm8937_l8>;
+	qcom,vdd-voltage-level = <2900000 2900000>;
+	qcom,vdd-current-level = <200 570000>;
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8937_l5>;
+	qcom,vdd-io-always-on;
+	qcom,vdd-io-lpm-sup;
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
+	qcom,vdd-io-current-level = <200 325000>;
+
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on &sdc1_rclk_on>;
+	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
+
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000 192000000
+								384000000>;
+	qcom,nonremovable;
+	qcom,bus-speed-mode = "HS400_1p8v", "HS200_1p8v", "DDR_1p8v";
+
+	status = "ok";
+};
+
+&sdhc_2 {
+	/* device core power supply */
+//#ifndef VENDOR_EDIT //Jianfeng.Qiu@BSP.Driver, 2014-09-13, Modify for tf card vdd supply change
+	vdd-supply = <&pm8937_l11>;
+	qcom,vdd-voltage-level = <2950000 2950000>;
+	qcom,vdd-current-level = <15000 800000>;
+//#else /* VENDOR_EDIT */
+        vdd-gpio-en = <&tlmm 96 0x1>;
+//#endif /* VENDOR_EDIT */
+
+	/* device communication power supply */
+	vdd-io-supply = <&pm8937_l12>;
+	qcom,vdd-io-voltage-level = <1800000 2950000>;
+	qcom,vdd-io-current-level = <200 22000>;
+//#ifndef VENDOR_EDIT //Tong.han@Bsp.Group.Tp modify for hotplug of T_card,2015-03-11
+//	pinctrl-names = "active", "sleep";
+//	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
+//	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
+//#else
+	pinctrl-names = "default", "active", "sleep";
+	pinctrl-0 = <&sdc2_cd_on &sim1_cd_on &sim2_cd_on>;
+	pinctrl-1 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
+	pinctrl-2 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
+//#endif
+	#address-cells = <0>;
+	interrupt-parent = <&sdhc_2>;
+	interrupts = <0 1 2>;
+	#interrupt-cells = <1>;
+	interrupt-map-mask = <0xffffffff>;
+	interrupt-map = <0 &intc 0 125 0
+		1 &intc 0 221 0
+		2 &tlmm 67 0>;
+	interrupt-names = "hc_irq", "pwr_irq", "status_irq";
+//#ifdef VENDOR_EDIT //Tong.han@Bsp.Group.Tp modify for hotplug of T_card,2015-03-11
+	cd-gpios = <&tlmm 67 0x1>;
+//#else
+	cd-gpios = <&tlmm 67 0x0>;
+ //#endif
+	qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
+								200000000>;
+	qcom,bus-speed-mode = "SDR12", "SDR25", "SDR50", "DDR50", "SDR104";
+
+	status = "ok";
+};
+
+&pm8937_gpios {
+	gpio@c400 {
+		qcom,mode = <0>;
+		qcom,output-type = <0>;
+		qcom,pull = <0>;
+		qcom,vin-sel = <2>;
+		qcom,out-strength = <3>;
+		qcom,src-sel = <0>;
+		qcom,master-en = <1>;
+		status = "okay";
+	};
+};
+
+#include "msm8937-mdss-panels.dtsi"
+
+&mdss_mdp {
+	qcom,mdss-pref-prim-intf = "dsi";
+};
+
+&mdss_dsi {
+	hw-config = "single_dsi";
+};
+
+&mdss_dsi0 {
+    //li.ping@SWDP.MultiMedia, 2016/08/11 Add for 16061 Lcd
+	qcom,dsi-pref-prim-pan = <&dsi_tianma_oppo16061_hx8394f_720p_video>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+
+	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-reset-gpio = <&tlmm 60 0>;
+	qcom,platform-enable-gpio = <&tlmm 48 0>;  /*5V ENP*/
+	qcom,platform-bklight-en-gpio = <&tlmm 63 0>;  /* -5V ENN*/
+	qcom,platform-ldo-1p8-gpio = <&tlmm 62 0>;  /*ldo 1.8v*/
+};
+
+&mdss_dsi1 {
+	status = "disabled";
+	qcom,dsi-pref-prim-pan = <&dsi_tianma_oppo16061_hx8394f_720p_video>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+
+	qcom,platform-te-gpio = <&tlmm 24 0>;
+	qcom,platform-reset-gpio = <&tlmm 60 0>;
+	qcom,platform-enable-gpio = <&tlmm 48 0>;  /*5V ENP*/
+	qcom,platform-bklight-en-gpio = <&tlmm 63 0>;  /* -5V ENN*/
+	qcom,platform-ldo-1p8-gpio = <&tlmm 62 0>;  /*ldo 1.8v*/
+};
+
+&dsi_boe_oppo16061_hx8394f_720p_video {
+      qcom,cont-splash-enabled;
+      qcom,esd-check-enabled;
+};
+
+&dsi_truly_oppo16061_hx8394f_720p_video {
+      qcom,cont-splash-enabled;
+      qcom,esd-check-enabled;
+};
+
+&dsi_boe_oppo16061_nt35521s_720p_video {
+      qcom,cont-splash-enabled;
+      //qcom,esd-check-enabled;
+};
+
+&dsi_boe_oppo16061_nt35521s_b8_720p_video {
+      qcom,cont-splash-enabled;
+      //qcom,esd-check-enabled;
+};
+
+&dsi_truly_oppo16061_nt35521s_720p_video {
+      qcom,cont-splash-enabled;
+      //qcom,esd-check-enabled;
+};
+
+&dsi_truly_oppo16061_hx8394f_new_720p_video {
+      qcom,cont-splash-enabled;
+};
+
+&dsi_truly_1080_vid {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
+
+&dsi_truly_1080_cmd {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,ulps-enabled;
+	qcom,partial-update-enabled;
+	qcom,panel-roi-alignment = <2 2 4 2 1080 2>;
+};
+
+&dsi_truly_720_vid {
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+};
+
+/* PM8937 GPIO configuration */
+&pm8937_gpios {
+	gpio@c100 {
+		qcom,mode = <0>;
+		qcom,vin-sel = <3>;
+		status = "okay";
+	};
+};

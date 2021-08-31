@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm-pmi8950.dtsi"
+#include "msm8937-mtp.dtsi"
+#include "msm8937-audio-mtp.dtsi"
+
+&soc {
+	led_flash0: qcom,camera-flash {
+		cell-index = <0>;
+		compatible = "qcom,camera-flash";
+		qcom,flash-type = <1>;
+/*#ifdef VENDOR_EDIT Add by Liubin for flash name at 20160818 */
+		qcom,flash-name = "pmic";
+		qcom,flash-source = <&pmi8950_flash0>;
+		qcom,torch-source = <&pmi8950_torch0>;
+/*#endif Add by Liubin for flash name at 20160818 */
+		qcom,switch-source = <&pmi8950_switch>;
+	};
+};
+
+/{
+	mtp_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+//#ifndef VENDOR_EDIT wenbin.liu@BSP.CHG.Gauge, 2016/08/26  
+// Delete for support three batterydata  . add 105k		
+//		#include "batterydata-itech-3000mah.dtsi"
+//		#include "batterydata-ascent-3450mAh.dtsi"
+//#else
+		#include "batterydata-oppo16061-sdi-2820mah.dtsi"
+		#include "batterydata-oppo16061-lg-2820mah.dtsi"
+		#include "batterydata-oppo16061-atl-2820mah.dtsi"
+		#include "batterydata-oppo16061-non-std-2820mah.dtsi"
+//#endif /*VENDOR_EDIT*/		
+	};
+};
+
+&pmi8950_fg {
+	qcom,battery-data = <&mtp_batterydata>;
+};
+
+&pmi8950_charger {
+	qcom,battery-data = <&mtp_batterydata>;
+	qcom,chg-led-sw-controls;
+	qcom,chg-led-support;
+	
+//#ifdef VENDOR_EDIT wenbin.liu@SW.Bsp.Driver, 2016/08/17  Add for pmic VADC 
+	qcom,dcin-vadc = <&pmi8950_vadc>;
+	qcom,pm8953chg-vadc = <&pm8937_vadc>;
+//#endif /*VENDOR_EDIT*/
+};
+
+&mdss_dsi0 {
+	lab-supply = <&lab_regulator>;
+	ibb-supply = <&ibb_regulator>;
+};
+
+&mdss_dsi1 {
+	lab-supply = <&lab_regulator>;
+	ibb-supply = <&ibb_regulator>;
+};
+
+&labibb {
+	status = "ok";
+	qpnp,qpnp-labibb-mode = "lcd";
+};
+
+&ibb_regulator {
+	qcom,qpnp-ibb-discharge-resistor = <32>;
+};
+
+&dsi_panel_pwr_supply {
+	qcom,panel-supply-entry@2 {
+		reg = <2>;
+		qcom,supply-name = "lab";
+		qcom,supply-min-voltage = <4600000>;
+		qcom,supply-max-voltage = <6000000>;
+		qcom,supply-enable-load = <100000>;
+		qcom,supply-disable-load = <100>;
+	};
+
+	qcom,panel-supply-entry@3 {
+		reg = <3>;
+		qcom,supply-name = "ibb";
+		qcom,supply-min-voltage = <4600000>;
+		qcom,supply-max-voltage = <6000000>;
+		qcom,supply-enable-load = <100000>;
+		qcom,supply-disable-load = <100>;
+		qcom,supply-post-on-sleep = <20>;
+	};
+};

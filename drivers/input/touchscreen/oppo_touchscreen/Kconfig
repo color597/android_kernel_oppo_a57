@@ -1,0 +1,38 @@
+config TOUCHPANEL_OPPO
+	bool "OPPO tp module"
+	help
+	  Say Y here if you have touchscreen module.
+
+config TOUCHPANEL_SYNAPTICS
+#	default y
+	bool "TP Synaptics_IC enable or not for OPPO"
+	---help---
+	say Y to enable driver for Touchpanel useing Synaptics_IC
+	  
+config TOUCHPANEL_FOCAL
+#	default y
+	bool "TP Synaptics_IC enable or not for OPPO"
+	---help---
+	say Y to enable driver for Touchpanel useing FOCALTECK_IC	  
+	  
+config TOUCHPANEL_GOODIX
+#	default y
+	bool "TP Synaptics_IC enable or not for OPPO"
+	---help---
+	say Y to enable driver for Touchpanel useing GOODIX_IC
+	
+	
+source "drivers/input/touchscreen/oppo_touchscreen/util_interface/Kconfig"
+
+if TOUCHPANEL_SYNAPTICS
+source "drivers/input/touchscreen/oppo_touchscreen/Synaptics/Kconfig"
+endif
+
+if TOUCHPANEL_GOODIX
+source "drivers/input/touchscreen/oppo_touchscreen/Goodix/Kconfig"
+endif
+
+if TOUCHPANEL_FOCAL
+#source "drivers/input/touchscreen/oppo_touchscreen/Focal/Kconfig"
+endif
+
